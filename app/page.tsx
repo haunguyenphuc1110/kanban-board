@@ -55,10 +55,9 @@ export default function Home() {
         <KanbanBoard />
       </main>
 
-      <AddTodoModal
-        isOpen={isNewTodoOpen}
-        onClose={() => setIsNewTodoOpen(false)}
-      />
+      {isNewTodoOpen && (
+        <AddTodoModal onClose={() => setIsNewTodoOpen(false)} />
+      )}
 
       <KeyboardShortcutsHelp
         isOpen={isHelpOpen}

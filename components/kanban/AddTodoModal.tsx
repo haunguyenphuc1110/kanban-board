@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Modal } from "@/components/ui/Modal";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
@@ -10,7 +10,6 @@ import { useTodoStore } from "@/lib/store/todoStore";
 import type { TodoItem, Priority, Status, Category } from "@/lib/types";
 
 interface AddTodoModalProps {
-  isOpen: boolean;
   onClose: () => void;
   /** When provided, the modal operates in edit mode rather than create mode. */
   todo?: TodoItem;
@@ -24,11 +23,10 @@ interface AddTodoModalProps {
  * Create mode: no `todo` prop — calls addTodo on submit.
  * Edit mode:   `todo` prop provided — calls updateTodo on submit.
  *
- * The form resets whenever the `todo` prop reference changes, which handles the
- * case where the user opens different cards without unmounting the modal.
+ * State is initialized from `todo` on mount. Callers must unmount and remount
+ * (e.g. via a conditional render) when switching between different todos.
  */
 export function AddTodoModal({
-  isOpen,
   onClose,
   todo,
   defaultStatus = "todo",
@@ -36,34 +34,25 @@ export function AddTodoModal({
   const { todos, categories, addTodo, updateTodo } = useTodoStore();
   const isEditing = !!todo;
 
-  const [title, setTitle]             = useState(todo?.title ?? "");
+  const [title, setTitle] = useState(todo?.title ?? "");
   const [description, setDescription] = useState(todo?.description ?? "");
-  const [priority, setPriority]       = useState<Priority>(todo?.priority ?? "medium");
-  const [status, setStatus]           = useState<Status>(todo?.status ?? defaultStatus);
+  const [priority, setPriority] = useState<Priority>(
+    todo?.priority ?? "medium",
+  );
+  const [status, setStatus] = useState<Status>(todo?.status ?? defaultStatus);
   // Date input expects "YYYY-MM-DD"; dueDate is stored as a full ISO string.
-  const [dueDate, setDueDate]         = useState(
-    todo?.dueDate ? todo.dueDate.slice(0, 10) : ""
+  const [dueDate, setDueDate] = useState(
+    todo?.dueDate ? todo.dueDate.slice(0, 10) : "",
   );
   const [selectedCats, setSelectedCats] = useState<string[]>(
-    todo?.categories.map((c) => c.id) ?? []
+    todo?.categories.map((c) => c.id) ?? [],
   );
   const [error, setError] = useState("");
 
-  // Keep the form in sync with whichever todo is being edited.
-  // This handles rapid switching between cards without remounting the component.
-  useEffect(() => {
-    setTitle(todo?.title ?? "");
-    setDescription(todo?.description ?? "");
-    setPriority(todo?.priority ?? "medium");
-    setStatus(todo?.status ?? defaultStatus);
-    setDueDate(todo?.dueDate ? todo.dueDate.slice(0, 10) : "");
-    setSelectedCats(todo?.categories.map((c) => c.id) ?? []);
-    setError("");
-  }, [todo, defaultStatus]);
 
   function toggleCategory(id: string) {
     setSelectedCats((prev) =>
-      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
     );
   }
 
@@ -75,31 +64,31 @@ export function AddTodoModal({
 
     // Resolve selected category ids back to full Category objects.
     const selectedCategories: Category[] = categories.filter((c) =>
-      selectedCats.includes(c.id)
+      selectedCats.includes(c.id),
     );
 
     if (isEditing && todo) {
       updateTodo(todo.id, {
-        title:       title.trim(),
+        title: title.trim(),
         description: description.trim() || undefined,
         priority,
         status,
-        dueDate:     dueDate ? new Date(dueDate).toISOString() : undefined,
+        dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
         // Preserve position when editing; it changes only on drag-and-drop.
-        position:    todo.position,
-        categories:  selectedCategories,
+        position: todo.position,
+        categories: selectedCategories,
       });
     } else {
       // Append to end of the target column by using its current length as position.
       const columnTodos = todos.filter((t) => t.status === status);
       addTodo({
-        title:       title.trim(),
+        title: title.trim(),
         description: description.trim() || undefined,
         priority,
         status,
-        dueDate:     dueDate ? new Date(dueDate).toISOString() : undefined,
-        position:    columnTodos.length,
-        categories:  selectedCategories,
+        dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
+        position: columnTodos.length,
+        categories: selectedCategories,
       });
     }
 
@@ -108,7 +97,7 @@ export function AddTodoModal({
 
   return (
     <Modal
-      isOpen={isOpen}
+      isOpen
       onClose={onClose}
       title={isEditing ? "Edit Todo" : "New Todo"}
       headerColor={isEditing ? "bg-accent" : "bg-primary"}
@@ -167,7 +156,9 @@ export function AddTodoModal({
         {/* Category multi-select as chip buttons */}
         {categories.length > 0 && (
           <div className="flex flex-col gap-2">
-            <span className="text-sm font-bold uppercase tracking-wide">Categories</span>
+            <span className="text-sm font-bold uppercase tracking-wide">
+              Categories
+            </span>
             <div className="flex flex-wrap gap-2">
               {categories.map((cat) => {
                 const active = selectedCats.includes(cat.id);
