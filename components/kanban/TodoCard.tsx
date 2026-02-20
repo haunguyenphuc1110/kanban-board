@@ -34,7 +34,11 @@ interface TodoCardProps {
  *   clone floats freely. See decisions.md D11.
  * - Overdue cards get a coral border + shadow and an OVERDUE badge.
  */
-export function TodoCard({ todo, isDragOverlay = false, className = "" }: TodoCardProps) {
+export function TodoCard({
+  todo,
+  isDragOverlay = false,
+  className = "",
+}: TodoCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const deleteTodo = useTodoStore((s) => s.deleteTodo);
   const overdue = isOverdue(todo);
@@ -159,11 +163,7 @@ export function TodoCard({ todo, isDragOverlay = false, className = "" }: TodoCa
 
       {/* Edit modal — mounted only while open to keep state isolated */}
       {isEditing && (
-        <AddTodoModal
-          isOpen={isEditing}
-          onClose={() => setIsEditing(false)}
-          todo={todo}
-        />
+        <AddTodoModal onClose={() => setIsEditing(false)} todo={todo} />
       )}
     </>
   );
