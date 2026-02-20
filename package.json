@@ -6,17 +6,34 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:generate": "node --env-file=.env.local ./node_modules/.bin/drizzle-kit generate",
+    "db:migrate": "node --env-file=.env.local ./node_modules/.bin/drizzle-kit migrate",
+    "db:studio": "node --env-file=.env.local ./node_modules/.bin/drizzle-kit studio"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@neondatabase/serverless": "^1.0.2",
+    "better-auth": "^1.4.18",
+    "date-fns": "^4.1.0",
+    "drizzle-kit": "^0.31.9",
+    "drizzle-orm": "^0.45.1",
+    "lucide-react": "^0.575.0",
     "next": "16.1.6",
+    "pg": "^8.18.0",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-big-calendar": "^1.19.4",
+    "react-dom": "19.2.3",
+    "zustand": "^5.0.11"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.16.0",
     "@types/react": "^19",
+    "@types/react-big-calendar": "^1.16.3",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
